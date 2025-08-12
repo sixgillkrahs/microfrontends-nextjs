@@ -1,5 +1,9 @@
 import { Breadcrumb, Layout, Menu, MenuProps, theme } from "custom-ui-antd";
-import { useState } from "react";
+import { Component, ReactNode, useState } from "react";
+
+interface MainLayoutProps {
+  children: ReactNode;
+}
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -26,7 +30,7 @@ const items: MenuItem[] = [
   getItem("Files", "9"),
 ];
 
-export function MainLayout({ children }: Layout.LayoutProps) {
+export default function MainLayout({ children }: MainLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },

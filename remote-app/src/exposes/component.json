@@ -1,0 +1,4 @@
+{
+    "./component/Header": "./src/components/Header.tsx",
+    "./component/Button": "./src/components/Button.tsx"
+}

@@ -1,12 +1,12 @@
 import MainLayout from "@/layouts/MainLayout";
 import React, { ReactElement } from "react";
 
-const Home = () => {
-  return <div>index</div>;
+const About = () => {
+  return <div>About page</div>;
 };
 
-Home.getLayout = function getLayout(page: ReactElement) {
+About.getLayout = function getLayout(page: ReactElement) {
   return <MainLayout>{page}</MainLayout>;
 };
 
-export default Home;
+export default About;

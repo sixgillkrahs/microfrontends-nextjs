@@ -1,4 +1,7 @@
-declare module "header/component/Header";
-declare module "header/component/Button";
-declare module "header/layouts/MainLayout";
+declare module "remote/component/Header";
+declare module "remote/component/Button";
+declare module "remote/layouts/MainLayout";
+
+declare module "remote/template/Login";
+declare module "remote/template/Register";
 

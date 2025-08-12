@@ -1,0 +1,4 @@
+{
+    "./template/Login": "./src/templates/Login/Login.tsx",
+    "./template/Register": "./src/templates/Register/Register.tsx"
+}
