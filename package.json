@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "install": "cd ./host-app && npm i && cd ../remote-app && npm i",
+    "dev": "concurrently \"cd host-app; npm run dev\" \"cd remote-app; npm run dev\" ",
+    "start": "concurrently \"cd host-app; npm run start\" \"cd remote-app; npm run start\" ",
+    "build": "cd ./host-app && npm run build && cd ../remote-app && npm run build"
+  },
+  "dependencies": {
+    "concurrently": "^7.6.0"
+  }
+}
