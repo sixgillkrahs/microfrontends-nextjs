@@ -1,0 +1,3 @@
+{
+    "./template/ConfigTable": "./src/templates/ConfigTable/ConfigTable.tsx"
+}

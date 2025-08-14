@@ -1,5 +1,10 @@
+import NavLink from "@/components/nav-link";
 import { Breadcrumb, Layout, Menu, MenuProps, theme } from "custom-ui-antd";
 import { Component, ReactNode, useState } from "react";
+import {
+  BreadcrumbProvider,
+  useBreadcrumb,
+} from "@/contexts/BreadcrumbContext";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -30,33 +35,40 @@ const items: MenuItem[] = [
   getItem("Files", "9"),
 ];
 
-export default function MainLayout({ children }: MainLayoutProps) {
+const menu = [
+  {
+    key: "1",
+    // icon: <PieChartOutlined />,
+    label: <NavLink href="/">Dashboard</NavLink>,
+  },
+  {
+    key: "2",
+    // icon: <SlidersOutlined />,
+    label: <NavLink href="/audit">Audit</NavLink>,
+  },
+];
+
+function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+  const { items } = useBreadcrumb();
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Sider
-        collapsible
-        collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
-      >
-        <div className="demo-logo-vertical" />
+      <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
         <Menu
           theme="dark"
           defaultSelectedKeys={["1"]}
           mode="inline"
-          items={items}
+          items={menu}
         />
       </Sider>
       <Layout>
         <Header style={{ padding: 0, background: colorBgContainer }} />
         <Content style={{ margin: "0 16px" }}>
-          <Breadcrumb
-            style={{ margin: "16px 0" }}
-            items={[{ title: "User" }, { title: "Bill" }]}
-          />
+          <Breadcrumb style={{ margin: "16px 0" }} items={items as any} />
           <div
             style={{
               padding: 24,
@@ -73,5 +85,17 @@ export default function MainLayout({ children }: MainLayoutProps) {
         </Footer>
       </Layout>
     </Layout>
+  );
+}
+
+export default function MainLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <BreadcrumbProvider>
+      <MainLayoutContent>{children}</MainLayoutContent>
+    </BreadcrumbProvider>
   );
 }

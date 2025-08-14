@@ -14,7 +14,8 @@ module.exports = withTM({
         new NextFederationPlugin({
           name: "host",
           remotes: {
-            remote: `remote@http://localhost:3000/_next/static/chunks/remoteEntry.js`,
+            remote: `remote@http://localhost:3001/_next/static/chunks/remoteEntry.js`,
+            audit: `audit@http://localhost:3002/_next/static/chunks/remoteEntry.js`,
           },
           filename: "static/chunks/remoteEntry.js",
 

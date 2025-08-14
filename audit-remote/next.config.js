@@ -27,16 +27,13 @@ module.exports = {
       //config.cache=false
       config.plugins.push(
         new NextFederationPlugin({
-          name: "autdi",
+          name: "audit",
 
           filename: "static/chunks/remoteEntry.js",
           exposes: {
             ...templateJson,
           },
-          shared: {
-            react: { singleton: true, requiredVersion: false },
-            "react-dom": { singleton: true, requiredVersion: false },
-          },
+          shared: {},
         })
       );
     }
