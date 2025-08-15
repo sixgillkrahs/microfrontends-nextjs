@@ -6,4 +6,5 @@ declare module "remote/template/Login";
 declare module "remote/template/Register";
 
 declare module "audit/template/ConfigTable";
+declare module "audit/template/Debezium";
 

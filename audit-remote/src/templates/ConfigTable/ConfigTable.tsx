@@ -9,7 +9,7 @@ export const ConfigTable = ({
   useEffect(() => {
     onBreadcrumbChange([
       { title: "Home", href: "/" },
-      { title: "Audit", href: "/audit" },
+      { title: "Audit" },
       { title: "Config Table" },
     ]);
   }, [onBreadcrumbChange]);

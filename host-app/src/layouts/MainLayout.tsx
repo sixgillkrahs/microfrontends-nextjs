@@ -1,39 +1,12 @@
 import NavLink from "@/components/nav-link";
-import { Breadcrumb, Layout, Menu, MenuProps, theme } from "custom-ui-antd";
-import { Component, ReactNode, useState } from "react";
 import {
   BreadcrumbProvider,
   useBreadcrumb,
 } from "@/contexts/BreadcrumbContext";
-
-interface MainLayoutProps {
-  children: ReactNode;
-}
+import { Breadcrumb, Layout, Menu, theme } from "custom-ui-antd";
+import { useState } from "react";
 
 const { Header, Footer, Sider, Content } = Layout;
-
-type MenuItem = Required<MenuProps>["items"][number];
-
-function getItem(
-  label: React.ReactNode,
-  key: React.Key,
-  icon?: React.ReactNode,
-  children?: MenuItem[]
-): MenuItem {
-  return {
-    key,
-    icon,
-    children,
-    label,
-  } as MenuItem;
-}
-
-const items: MenuItem[] = [
-  getItem("Option 1", "1"),
-  getItem("Option 2", "2"),
-  getItem("User", "sub1"),
-  getItem("Files", "9"),
-];
 
 const menu = [
   {
@@ -44,7 +17,25 @@ const menu = [
   {
     key: "2",
     // icon: <SlidersOutlined />,
-    label: <NavLink href="/audit">Audit</NavLink>,
+    label: "Audit",
+    children: [
+      {
+        key: "debezium-connector",
+        // icon: <SlidersOutlined />,
+        label: (
+          <NavLink href="/audit/debezium-connector">Debezium Connector</NavLink>
+        ),
+      },
+      {
+        key: "table-configuration",
+        // icon: <SlidersOutlined />,
+        label: (
+          <NavLink href="/audit/table-configuration">
+            Table Configuration
+          </NavLink>
+        ),
+      },
+    ],
   },
 ];
 

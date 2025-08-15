@@ -1,18 +1,17 @@
 import { BreadcrumbItem, useBreadcrumb } from "@/contexts/BreadcrumbContext";
 import MainLayout from "@/layouts/MainLayout";
 import dynamic from "next/dynamic";
-import React, { ReactElement, useEffect } from "react";
+import { ReactElement } from "react";
 
-const ConfigTablePage = dynamic<{
+const DebeziumPage = dynamic<{
   onBreadcrumbChange: (items: BreadcrumbItem[]) => void;
-}>(() => import("audit/template/ConfigTable").then((m) => m.ConfigTable), {
+}>(() => import("audit/template/Debezium").then((m) => m.Debezium), {
   ssr: false,
 });
 
 const Audit = () => {
   const { setItems } = useBreadcrumb();
-
-  return <ConfigTablePage onBreadcrumbChange={setItems} />;
+  return <DebeziumPage onBreadcrumbChange={setItems} />;
 };
 
 Audit.getLayout = function getLayout(page: ReactElement) {

@@ -33,7 +33,12 @@ module.exports = {
           exposes: {
             ...templateJson,
           },
-          shared: {},
+          shared: {
+            "@tanstack/react-query": {
+              singleton: true,
+              eager: true,
+            },
+          },
         })
       );
     }

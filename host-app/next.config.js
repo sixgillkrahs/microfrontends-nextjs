@@ -19,7 +19,12 @@ module.exports = withTM({
           },
           filename: "static/chunks/remoteEntry.js",
 
-          shared: {},
+          shared: {
+            "@tanstack/react-query": {
+              singleton: true,
+              eager: true,
+            },
+          },
         })
       );
     }
