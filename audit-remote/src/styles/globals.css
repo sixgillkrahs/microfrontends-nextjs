@@ -1,3 +1,5 @@
+@import './configTable.css';
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -19,3 +21,5 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+

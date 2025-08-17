@@ -2,6 +2,7 @@
 const NextFederationPlugin = require("@module-federation/nextjs-mf");
 const fs = require("fs");
 const path = require("path");
+const withTM = require("next-transpile-modules")(["custom-ui-antd"]);
 
 function loadJsonFromFolder(folderPath) {
   const absolutePath = path.resolve(__dirname, folderPath);
@@ -19,7 +20,7 @@ function loadJsonFromFolder(folderPath) {
 
 const templateJson = loadJsonFromFolder("./src/exposes");
 
-module.exports = {
+module.exports = withTM({
   webpack(config, options) {
     const { webpack } = options;
     Object.assign(config.experiments, { topLevelAwait: true });
@@ -30,12 +31,16 @@ module.exports = {
           name: "audit",
 
           filename: "static/chunks/remoteEntry.js",
+          remotes: {
+            main: `main@http://localhost:3000/_next/static/chunks/remoteEntry.js`,
+          },
           exposes: {
             ...templateJson,
           },
           shared: {
             "@tanstack/react-query": {
               singleton: true,
+              requiredVersion: false,
               eager: true,
             },
           },
@@ -45,4 +50,4 @@ module.exports = {
 
     return config;
   },
-};
+});
