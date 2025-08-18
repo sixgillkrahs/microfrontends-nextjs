@@ -1,8 +1,18 @@
-import { BreadcrumbItem } from "@/types";
-import React, { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Button, Table, TableColumnsType } from "custom-ui-antd";
 import { useModal } from "@/hooks";
+import { deleteConnector, getConnector } from "@/service/configTable/api";
+import { BreadcrumbItem } from "@/types";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Button,
+  message,
+  Popconfirm,
+  Space,
+  Table,
+  TableColumnsType,
+  Tag,
+} from "custom-ui-antd";
+import { useCallback, useEffect, useState } from "react";
 import CUModal from "./components/CUModal";
 
 export const ConfigTable = ({
@@ -11,32 +21,61 @@ export const ConfigTable = ({
   onBreadcrumbChange: (items: BreadcrumbItem[]) => void;
 }) => {
   const [openCreate, openCreateDialog, closeCreateDialog] = useModal();
+  const [messageApi, contextHolder] = message.useMessage();
+  const queryClient = useQueryClient();
+  const [pagination, setPagination] = useState<ConfigTable.Pagination>({
+    pageIndex: 0,
+    pageSize: 5,
+    total: 0,
+  });
   const { data, error, isLoading } = useQuery({
-    queryKey: ["debezium-connectors"],
-    queryFn: async () => {
-      const res = await fetch(
-        "https://promix.lam-hang.com/audit/api/debezium-connectors/search",
-        {
-          method: "GET",
-          headers: { accept: "*/*" },
-        }
-      );
-
-      const json = await res.json();
-      console.log(json);
-
-      if (!res.ok) {
-        throw new Error(`HTTP error! Status: ${res.status}`);
-      }
-
-      return json;
-    },
+    queryKey: [
+      "debezium-connectors",
+      pagination.pageIndex,
+      pagination.pageSize,
+    ],
+    queryFn: () => getConnector(pagination.pageSize, pagination.pageIndex),
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     retry: false,
     staleTime: Infinity,
   });
+  const [header, setHeader] = useState<ConfigTable.Header>();
+  const deleteMutation = useMutation({
+    mutationFn: deleteConnector,
+    onSuccess: () => {
+      messageApi.open({
+        type: "success",
+        content: "Xóa thành công",
+      });
+      queryClient.invalidateQueries({ queryKey: ["debezium-connectors"] });
+    },
+    onError: (error: any) => {
+      messageApi.open({
+        type: "error",
+        content: "Có lỗi xảy ra khi xóa",
+      });
+    },
+  });
   console.log(data?.data?.content);
+
+  const listStatus = [
+    {
+      label: "Khởi tạo",
+      value: "CREATED",
+      color: "default",
+    },
+    {
+      label: "Đang kết nối",
+      value: "RUNNING",
+      color: "success",
+    },
+    {
+      label: "Đã xóa",
+      value: "DELETED",
+      color: "error",
+    },
+  ];
 
   useEffect(() => {
     onBreadcrumbChange([
@@ -44,20 +83,32 @@ export const ConfigTable = ({
       { title: "Audit" },
       { title: "Config Table" },
     ]);
-  }, []);
+  }, [onBreadcrumbChange]);
 
   const columns: TableColumnsType = [
+    {
+      title: "STT",
+      key: "index",
+      dataIndex: "index",
+      width: 60,
+      render(value, record, index) {
+        console.log(index);
+        return (
+          <div>{index + 1 + pagination.pageIndex * pagination.pageSize}</div>
+        );
+      },
+    },
     {
       title: "Tên kết nối",
       key: "connectorName",
       dataIndex: "connectorName",
-      width: 220,
+      width: 320,
     },
     {
       title: "Loại cơ sở dữ liệu",
       key: "databaseType",
       dataIndex: "databaseType",
-      width: 120,
+      width: 220,
     },
     {
       title: "Cấu hình",
@@ -80,6 +131,17 @@ export const ConfigTable = ({
       },
     },
     {
+      title: "Trạng thái",
+      key: "status",
+      dataIndex: "status",
+      width: 220,
+      render: (value: string) => {
+        const status = listStatus.find((x) => x.value === value);
+        if (!status) return <Tag color="default">Khởi tạo</Tag>;
+        return <Tag color={status.color}>{status.label}</Tag>;
+      },
+    },
+    {
       title: "Thời gian tạo",
       key: "createdAt",
       dataIndex: "createdAt",
@@ -97,16 +159,63 @@ export const ConfigTable = ({
     {
       title: "Hành động",
       key: "action",
-      width: 90,
+      width: 120,
+      render: (value: any) => {
+        return (
+          <Space>
+            <EditOutlined
+              key={"DeleteButton"}
+              title={"Sửa"}
+              style={{ padding: 10 }}
+              onClick={() => handleUpdate(value)}
+            />
+            <Popconfirm
+              title={"Bạn có muốn xóa kết nối này không?"}
+              onConfirm={() => handleDelete(value.id)}
+              okText={"Đồng ý"}
+              cancelText={"Hủy"}
+              placement="left"
+            >
+              <DeleteOutlined
+                key={"DeleteButton"}
+                title={"Xóa"}
+                style={{ padding: 10 }}
+              />
+            </Popconfirm>
+          </Space>
+        );
+      },
     },
   ];
 
   const handleCreate = () => {
+    setHeader({
+      data: null,
+      type: "ADD",
+    });
     openCreateDialog();
+  };
+
+  const handleClose = useCallback(() => {
+    closeCreateDialog();
+  }, [closeCreateDialog]);
+
+  const handleUpdate = (data: ConfigTable.BaseConfigObj) => {
+    console.log(data);
+    setHeader({
+      data: data,
+      type: "EDIT",
+    });
+    openCreateDialog();
+  };
+
+  const handleDelete = (id: string) => {
+    deleteMutation.mutate(id);
   };
 
   return (
     <div>
+      {contextHolder}
       <div
         style={{
           display: "flex",
@@ -122,8 +231,24 @@ export const ConfigTable = ({
         columns={columns}
         dataSource={data?.data?.content || []}
         rowKey={"id"}
+        loading={isLoading}
+        pagination={{
+          align: "center",
+          current: pagination.pageIndex + 1,
+          total: data?.data?.total || 0,
+          pageSize: pagination.pageSize,
+          showSizeChanger: true,
+          pageSizeOptions: [5, 10, 20],
+          onChange(page, pageSize) {
+            setPagination({
+              pageIndex: page - 1,
+              pageSize,
+              total: data?.data?.total || 0,
+            });
+          },
+        }}
       />
-      <CUModal onCancel={closeCreateDialog} open={openCreate} />
+      <CUModal onCancel={handleClose} open={openCreate} header={header!} />
     </div>
   );
 };

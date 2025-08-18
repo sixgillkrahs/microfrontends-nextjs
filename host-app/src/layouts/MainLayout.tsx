@@ -20,19 +20,19 @@ const menu = [
     label: "Audit",
     children: [
       {
-        key: "debezium-connector",
-        // icon: <SlidersOutlined />,
-        label: (
-          <NavLink href="/audit/debezium-connector">Debezium Connector</NavLink>
-        ),
-      },
-      {
         key: "table-configuration",
         // icon: <SlidersOutlined />,
         label: (
           <NavLink href="/audit/table-configuration">
             Table Configuration
           </NavLink>
+        ),
+      },
+      {
+        key: "debezium-connector",
+        // icon: <SlidersOutlined />,
+        label: (
+          <NavLink href="/audit/debezium-connector">Debezium Connector</NavLink>
         ),
       },
     ],
