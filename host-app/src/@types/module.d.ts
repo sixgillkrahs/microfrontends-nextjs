@@ -7,4 +7,5 @@ declare module "remote/template/Register";
 
 declare module "audit/template/ConfigTable";
 declare module "audit/template/Debezium";
+declare module "audit/template/DebeziumDetail";
 

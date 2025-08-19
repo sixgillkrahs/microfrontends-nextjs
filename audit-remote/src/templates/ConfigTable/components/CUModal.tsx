@@ -15,6 +15,7 @@ import { memo, useEffect } from "react";
 import { InfoCircleOutlined, PlusOutlined } from "@ant-design/icons";
 
 const { Panel } = Collapse;
+const { Password } = Input;
 
 const CUModal = ({ open, onCancel, header }: ConfigTable.PropsDialog) => {
   const [form] = Form.useForm();
@@ -39,11 +40,14 @@ const CUModal = ({ open, onCancel, header }: ConfigTable.PropsDialog) => {
   useEffect(() => {
     if (header?.data) {
       form.setFieldsValue(header.data);
+      console.log(header?.data);
     }
   }, [header?.data]);
 
   const onFinish = (values: any) => {
-    const finalValues = { ...values };
+    const finalValues = {
+      ...values,
+    };
     header.type === "ADD"
       ? mutation.mutate({ type: "ADD", data: finalValues })
       : mutation.mutate({
@@ -90,8 +94,10 @@ const CUModal = ({ open, onCancel, header }: ConfigTable.PropsDialog) => {
             <Form.Item
               label="Connector Class"
               name={["baseConfig", "connector.class"]}
+              rules={[{ required: true, message: "Chọn loại CSDL" }]}
             >
               <Select
+                placeholder={"Chọn connecter classs"}
                 options={[
                   {
                     label: "MySQL",
@@ -107,20 +113,51 @@ const CUModal = ({ open, onCancel, header }: ConfigTable.PropsDialog) => {
             <Form.Item
               label="Hostname"
               name={["baseConfig", "database.hostname"]}
+              rules={[{ required: true, message: "Chọn loại CSDL" }]}
             >
               <Input placeholder="promotion-mariadb" />
             </Form.Item>
-            <Form.Item label="Port" name={["baseConfig", "database.port"]}>
+            <Form.Item
+              label="Port"
+              name={["baseConfig", "database.port"]}
+              rules={[{ required: true, message: "Chọn loại CSDL" }]}
+            >
               <InputNumber style={{ width: "100%" }} placeholder="3306" />
             </Form.Item>
-            <Form.Item label="User" name={["baseConfig", "database.user"]}>
+            <Form.Item
+              label="User"
+              name={["baseConfig", "database.user"]}
+              rules={[{ required: true, message: "Chọn loại CSDL" }]}
+            >
               <Input placeholder="root" />
             </Form.Item>
             <Form.Item
               label="Password"
               name={["baseConfig", "database.password"]}
+              rules={[{ required: true, message: "Chọn loại CSDL" }]}
             >
-              <Input placeholder="••••••" />
+              <Password placeholder="••••••" />
+            </Form.Item>
+            <Form.Item
+              label="ServerId"
+              name={["baseConfig", "database.server.id"]}
+              rules={[{ required: true, message: "Chọn loại CSDL" }]}
+            >
+              <Input placeholder="Nhập serverId" />
+            </Form.Item>
+            <Form.Item
+              label="Server name"
+              name={["baseConfig", "database.server.name"]}
+              rules={[{ required: true, message: "Chọn loại CSDL" }]}
+            >
+              <Input placeholder="Nhập tên server" />
+            </Form.Item>
+            <Form.Item
+              label="Include List"
+              name={["baseConfig", "database.include.list"]}
+              rules={[{ required: true, message: "Chọn loại CSDL" }]}
+            >
+              <Input placeholder="user" />
             </Form.Item>
           </Panel>
 
@@ -140,8 +177,23 @@ const CUModal = ({ open, onCancel, header }: ConfigTable.PropsDialog) => {
               <Switch />
             </Form.Item>
             <Form.Item
+              label="Database include list"
+              name={["baseConfig", "database.include.list"]}
+              rules={[{ required: true, message: "Chọn loại CSDL" }]}
+            >
+              <Input placeholder="user.users" />
+            </Form.Item>
+            <Form.Item
+              label="Topic prefix"
+              name={["baseConfig", "topic.prefix"]}
+              rules={[{ required: true, message: "Chọn loại CSDL" }]}
+            >
+              <Input placeholder="schema-changes.mariadb" />
+            </Form.Item>
+            <Form.Item
               label="Kafka Topic"
               name={["baseConfig", "schema.history.internal.kafka.topic"]}
+              rules={[{ required: true, message: "Chọn loại CSDL" }]}
             >
               <Input placeholder="schema-changes.mariadb" />
             </Form.Item>
@@ -151,8 +203,52 @@ const CUModal = ({ open, onCancel, header }: ConfigTable.PropsDialog) => {
                 "baseConfig",
                 "schema.history.internal.kafka.bootstrap.servers",
               ]}
+              rules={[{ required: true, message: "Chọn loại CSDL" }]}
             >
               <Input placeholder="kafka-1:9092" />
+            </Form.Item>
+          </Panel>
+          <Panel header="Cấu hình khác" key="other">
+            <Form.Item>
+              <Form.List name={"baseConfigOther"}>
+                {(fields, { add, remove }) => (
+                  <>
+                    {fields.map(({ key, name, ...restField }) => (
+                      <div
+                        key={key}
+                        style={{ display: "flex", gap: "8px", marginBottom: 8 }}
+                      >
+                        <Form.Item
+                          {...restField}
+                          name={[name, "field"]}
+                          rules={[
+                            { required: true, message: "Nhập tên trường" },
+                          ]}
+                          style={{ flex: 1 }}
+                        >
+                          <Input placeholder="Tên trường" />
+                        </Form.Item>
+                        <Form.Item
+                          {...restField}
+                          name={[name, "value"]}
+                          rules={[{ required: true, message: "Nhập giá trị" }]}
+                          style={{ flex: 1 }}
+                        >
+                          <Input placeholder="Giá trị" />
+                        </Form.Item>
+                        <Button danger onClick={() => remove(name)}>
+                          Xóa
+                        </Button>
+                      </div>
+                    ))}
+                    <Form.Item>
+                      <Button type="dashed" onClick={() => add()} block>
+                        + Thêm cấu hình
+                      </Button>
+                    </Form.Item>
+                  </>
+                )}
+              </Form.List>
             </Form.Item>
           </Panel>
         </Collapse>

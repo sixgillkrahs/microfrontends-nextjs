@@ -1,4 +1,5 @@
 {
     "./template/ConfigTable": "./src/templates/ConfigTable/ConfigTable.tsx",
-    "./template/Debezium": "./src/templates/Debezium/Debezium.tsx"
+    "./template/Debezium": "./src/templates/Debezium/Debezium.tsx",
+    "./template/DebeziumDetail": "./src/templates/DebeziumDetail/DebeziumDetail.tsx"
 }

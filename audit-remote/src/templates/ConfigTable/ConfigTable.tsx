@@ -19,16 +19,16 @@ import {
 } from "loxtek-ui";
 import { useCallback, useEffect, useState } from "react";
 import CUModal from "./components/CUModal";
+import { useRouter } from "next/router";
 
 type SearchProps = GetProps<typeof Input.Search>;
-
-const { Search } = Input;
 
 export const ConfigTable = ({
   onBreadcrumbChange,
 }: {
   onBreadcrumbChange: (items: BreadcrumbItem[]) => void;
 }) => {
+  const router = useRouter();
   const [openCreate, openCreateDialog, closeCreateDialog] = useModal();
   const [messageApi, contextHolder] = message.useMessage();
   const queryClient = useQueryClient();
@@ -152,8 +152,6 @@ export const ConfigTable = ({
       sorter: true,
       showSorterTooltip: false,
       onFilter: (value, record) => {
-        console.log(value);
-        console.log(record);
         return true;
       },
       render: (value: string) => {
@@ -175,9 +173,11 @@ export const ConfigTable = ({
           <Space>
             <EyeOutlined
               key={"View"}
-              title={"Sửa"}
+              title={"Xem chi tiết"}
               style={{ padding: 10 }}
-              onClick={() => handleUpdate(value)}
+              onClick={() =>
+                router.push(`${router.asPath}/detail-connecter/${value.id}`)
+              }
             />
             <EditOutlined
               key={"DeleteButton"}
@@ -217,7 +217,6 @@ export const ConfigTable = ({
   }, [closeCreateDialog]);
 
   const handleUpdate = (data: ConfigTable.BaseConfigObj) => {
-    console.log(data);
     setHeader({
       data: data,
       type: "EDIT",

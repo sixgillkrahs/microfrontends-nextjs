@@ -47,3 +47,18 @@ export async function deleteConnector(id: string) {
 
     return res.json().catch(() => ({}));
 }
+
+export async function getConnectorDetail(id: string) {
+    const res = await fetch(
+        `https://promix.promixhub.com/audit/api/debezium-connectors/${id}`,
+        {
+            method: "GET",
+            headers: { accept: "*/*" },
+        }
+    );
+    const json = await res.json();
+    if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
+    }
+    return json;
+}
