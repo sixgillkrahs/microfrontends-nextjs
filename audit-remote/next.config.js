@@ -2,7 +2,7 @@
 const NextFederationPlugin = require("@module-federation/nextjs-mf");
 const fs = require("fs");
 const path = require("path");
-const withTM = require("next-transpile-modules")(["custom-ui-antd"]);
+const withTM = require("next-transpile-modules")(["loxtek-ui"]);
 
 function loadJsonFromFolder(folderPath) {
   const absolutePath = path.resolve(__dirname, folderPath);

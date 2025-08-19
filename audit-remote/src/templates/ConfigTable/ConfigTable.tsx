@@ -1,7 +1,7 @@
 import { useModal } from "@/hooks";
 import { deleteConnector, getConnector } from "@/service/configTable/api";
 import { BreadcrumbItem } from "@/types";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Button,
@@ -10,10 +10,19 @@ import {
   Space,
   Table,
   TableColumnsType,
+  TableProps,
   Tag,
-} from "custom-ui-antd";
+  Input,
+  GetProps,
+  Select,
+  CheckboxOptionType,
+} from "loxtek-ui";
 import { useCallback, useEffect, useState } from "react";
 import CUModal from "./components/CUModal";
+
+type SearchProps = GetProps<typeof Input.Search>;
+
+const { Search } = Input;
 
 export const ConfigTable = ({
   onBreadcrumbChange,
@@ -25,16 +34,26 @@ export const ConfigTable = ({
   const queryClient = useQueryClient();
   const [pagination, setPagination] = useState<ConfigTable.Pagination>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 10,
     total: 0,
+    sort: "",
+    search: "",
   });
   const { data, error, isLoading } = useQuery({
     queryKey: [
       "debezium-connectors",
       pagination.pageIndex,
       pagination.pageSize,
+      pagination.sort,
+      pagination.search,
     ],
-    queryFn: () => getConnector(pagination.pageSize, pagination.pageIndex),
+    queryFn: () =>
+      getConnector(
+        pagination.pageSize,
+        pagination.pageIndex,
+        pagination.sort,
+        pagination.search
+      ),
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     retry: false,
@@ -57,7 +76,6 @@ export const ConfigTable = ({
       });
     },
   });
-  console.log(data?.data?.content);
 
   const listStatus = [
     {
@@ -92,7 +110,6 @@ export const ConfigTable = ({
       dataIndex: "index",
       width: 60,
       render(value, record, index) {
-        console.log(index);
         return (
           <div>{index + 1 + pagination.pageIndex * pagination.pageSize}</div>
         );
@@ -103,38 +120,24 @@ export const ConfigTable = ({
       key: "connectorName",
       dataIndex: "connectorName",
       width: 320,
+      sorter: true,
+      showSorterTooltip: false,
     },
     {
       title: "Loại cơ sở dữ liệu",
       key: "databaseType",
       dataIndex: "databaseType",
+      showSorterTooltip: false,
       width: 220,
-    },
-    {
-      title: "Cấu hình",
-      key: "baseConfig",
-      dataIndex: "baseConfig",
-      render: (value: Record<string, string>) => {
-        return (
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            {Object.entries(value || {}).map(([key, val]) => (
-              <div
-                key={key}
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <strong>{key}:</strong>
-                <span>{val}</span>
-              </div>
-            ))}
-          </div>
-        );
-      },
+      sorter: true,
     },
     {
       title: "Trạng thái",
       key: "status",
       dataIndex: "status",
       width: 220,
+      sorter: true,
+      showSorterTooltip: false,
       render: (value: string) => {
         const status = listStatus.find((x) => x.value === value);
         if (!status) return <Tag color="default">Khởi tạo</Tag>;
@@ -146,6 +149,13 @@ export const ConfigTable = ({
       key: "createdAt",
       dataIndex: "createdAt",
       width: 220,
+      sorter: true,
+      showSorterTooltip: false,
+      onFilter: (value, record) => {
+        console.log(value);
+        console.log(record);
+        return true;
+      },
       render: (value: string) => {
         const date = new Date(value);
         const formatted = date.toLocaleDateString("vi-VN", {
@@ -163,6 +173,12 @@ export const ConfigTable = ({
       render: (value: any) => {
         return (
           <Space>
+            <EyeOutlined
+              key={"View"}
+              title={"Sửa"}
+              style={{ padding: 10 }}
+              onClick={() => handleUpdate(value)}
+            />
             <EditOutlined
               key={"DeleteButton"}
               title={"Sửa"}
@@ -213,6 +229,45 @@ export const ConfigTable = ({
     deleteMutation.mutate(id);
   };
 
+  const onChange: TableProps<any>["onChange"] = (_, __, sorter, ___) => {
+    const { field, order } = sorter as any;
+    if (order) {
+      setPagination((prev) => {
+        return {
+          ...prev,
+          sort: `${field},${order === "ascend" ? "asc" : "desc"}`,
+        };
+      });
+    } else {
+      setPagination((prev) => {
+        return {
+          ...prev,
+          sort: "",
+        };
+      });
+    }
+  };
+
+  const onSearch: SearchProps["onSearch"] = (value, _e, info) => {
+    setPagination((prev) => {
+      return {
+        ...prev,
+        search: value,
+      };
+    });
+  };
+
+  const optionValue: CheckboxOptionType[] = [
+    {
+      value: "CREATED",
+      label: "Khởi tạo",
+    },
+    {
+      value: "CONNECTED",
+      label: "Đã kết nối",
+    },
+  ];
+
   return (
     <div>
       {contextHolder}
@@ -221,8 +276,31 @@ export const ConfigTable = ({
           display: "flex",
           justifyContent: "flex-end",
           marginBottom: "16px",
+          gap: 20,
         }}
       >
+        <div
+          style={{
+            display: "flex",
+            gap: 10,
+          }}
+        >
+          <Input
+            placeholder="Tìm kiếm kết nối"
+            allowClear
+            onClear={() => onSearch("")}
+            style={{ width: 244 }}
+            onPressEnter={(e) => onSearch((e.target as HTMLInputElement).value)}
+          />
+          <Select
+            allowClear
+            style={{
+              minWidth: 180,
+            }}
+            placeholder="Chọn trạng thái"
+            options={optionValue}
+          />
+        </div>
         <Button type="primary" onClick={handleCreate}>
           Thêm kết nối
         </Button>
@@ -232,6 +310,7 @@ export const ConfigTable = ({
         dataSource={data?.data?.content || []}
         rowKey={"id"}
         loading={isLoading}
+        onChange={onChange}
         pagination={{
           align: "center",
           current: pagination.pageIndex + 1,

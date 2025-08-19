@@ -17,9 +17,9 @@ export async function updateConnector(id: string, data: any) {
     ).then((res) => res.json());
 }
 
-export async function getConnector(pageSize: number = 10, pageIndex: number = 0) {
+export async function getConnector(pageSize: number = 10, pageIndex: number = 0, sort?: string, search?: string) {
     const res = await fetch(
-        `https://promix.promixhub.com/audit/api/debezium-connectors/search?page=${pageIndex}&size=${pageSize}`,
+        `https://promix.promixhub.com/audit/api/debezium-connectors/search?page=${pageIndex}&size=${pageSize}&sort=${sort}&search=${search}`,
         {
             method: "GET",
             headers: { accept: "*/*" },

@@ -10,7 +10,7 @@ import {
   Select,
   Switch,
   Tooltip,
-} from "custom-ui-antd";
+} from "loxtek-ui";
 import { memo, useEffect } from "react";
 import { InfoCircleOutlined, PlusOutlined } from "@ant-design/icons";
 
@@ -64,31 +64,28 @@ const CUModal = ({ open, onCancel, header }: ConfigTable.PropsDialog) => {
       width={720}
     >
       <Form form={form} layout="vertical" onFinish={onFinish}>
+        <Form.Item
+          label="Tên kết nối"
+          name="connectorName"
+          rules={[{ required: true, message: "Vui lòng nhập tên kết nối" }]}
+        >
+          <Input placeholder="Ví dụ: mariadb_connector_01" />
+        </Form.Item>
+        <Form.Item
+          label="Loại cơ sở dữ liệu"
+          name="databaseType"
+          rules={[{ required: true, message: "Chọn loại CSDL" }]}
+        >
+          <Select
+            placeholder="Chọn loại CSDL"
+            options={[
+              { label: "MySQL", value: "mysql" },
+              { label: "Postgres", value: "postgres" },
+              { label: "MariaDB", value: "mariadb" },
+            ]}
+          />
+        </Form.Item>
         <Collapse defaultActiveKey={["info", "db", "kafka"]} ghost>
-          <Panel header="Thông tin kết nối" key="info">
-            <Form.Item
-              label="Tên kết nối"
-              name="connectorName"
-              rules={[{ required: true, message: "Vui lòng nhập tên kết nối" }]}
-            >
-              <Input placeholder="Ví dụ: mariadb_connector_01" />
-            </Form.Item>
-            <Form.Item
-              label="Loại cơ sở dữ liệu"
-              name="databaseType"
-              rules={[{ required: true, message: "Chọn loại CSDL" }]}
-            >
-              <Select
-                placeholder="Chọn loại CSDL"
-                options={[
-                  { label: "MySQL", value: "mysql" },
-                  { label: "Postgres", value: "postgres" },
-                  { label: "MariaDB", value: "mariadb" },
-                ]}
-              />
-            </Form.Item>
-          </Panel>
-
           <Panel header="Cấu hình Database" key="db">
             <Form.Item
               label="Connector Class"

@@ -23,6 +23,8 @@ declare namespace ConfigTable {
     type Pagination = {
         pageSize: number,
         pageIndex: number,
-        total: number
+        total: number,
+        sort?: string,
+        search?: string
     }
 }
